@@ -45,9 +45,10 @@ export default function RewardsPage() {
   }
 
   const balance = tokenBalance ? formatEther(tokenBalance as bigint) : '0'
-  const totalRides = riderStats ? Number(riderStats[0]) : 0
-  const totalDistance = riderStats ? Number(riderStats[1]) / 1000 : 0 // Convert to km
-  const totalRewards = riderStats ? formatEther(riderStats[2] as bigint) : '0'
+  const stats = riderStats as [bigint, bigint, bigint] | undefined
+  const totalRides = stats ? Number(stats[0]) : 0
+  const totalDistance = stats ? Number(stats[1]) / 1000 : 0 // Convert to km
+  const totalRewards = stats ? formatEther(stats[2]) : '0'
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
