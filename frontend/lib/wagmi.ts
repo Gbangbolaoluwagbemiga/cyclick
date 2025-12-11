@@ -1,12 +1,12 @@
+import { createConfig, http } from 'wagmi'
+import { celo, celoAlfajores } from 'wagmi/chains'
 import { createAppKit } from '@reown/appkit/react'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { mainnet, celo, celoAlfajores } from '@reown/appkit/networks'
-import { CELO_MAINNET_CHAIN_ID, CELO_MAINNET_RPC } from './contracts'
 
-// Get project ID from environment or use a default
+// Get project ID from environment
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || ''
 
-// Create the Wagmi adapter
+// Configure metadata
 const metadata = {
   name: 'Cyclick',
   description: 'Sustainable Cycling Rewards Platform',
@@ -15,11 +15,20 @@ const metadata = {
 }
 
 // Configure networks
-const networks = [celo, celoAlfajores, mainnet]
+const networks = [celo, celoAlfajores] as const
+
+// Create wagmi config
+export const wagmiConfig = createConfig({
+  chains: networks,
+  transports: {
+    [celo.id]: http(),
+    [celoAlfajores.id]: http(),
+  },
+})
 
 // Create Wagmi adapter
 const wagmiAdapter = new WagmiAdapter({
-  networks,
+  wagmiConfig,
   projectId,
   metadata
 })
@@ -40,6 +49,4 @@ export const appKit = createAppKit({
     '--w3m-accent': '#35D07F', // Celo green
   },
 })
-
-export const wagmiConfig = wagmiAdapter.wagmiConfig
 
