@@ -100,11 +100,11 @@ export default function RidePage() {
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
         <Header />
         <main className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-4xl font-bold mb-4">Start a Ride</h1>
-          <p className="text-xl text-gray-600 mb-8">
+          <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Start a Ride</h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
             Please connect your wallet to start tracking your ride
           </p>
         </main>
@@ -113,31 +113,31 @@ export default function RidePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       <Header />
       <main className="container mx-auto px-4 py-16">
-        <h1 className="text-4xl font-bold mb-8 text-center">🚴 Track Your Ride</h1>
+        <h1 className="text-4xl font-bold mb-8 text-center text-gray-900 dark:text-white">🚴 Track Your Ride</h1>
 
-        <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
+        <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
           {/* Ride Stats */}
           <div className="grid grid-cols-3 gap-4 mb-8">
-            <div className="text-center p-4 bg-green-50 rounded-lg">
+            <div className="text-center p-4 bg-green-50 dark:bg-green-900/30 rounded-lg">
               <div className="text-2xl font-bold text-[#35D07F]">
                 {(distance / 1000).toFixed(2)} km
               </div>
-              <div className="text-sm text-gray-600">Distance</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Distance</div>
             </div>
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">
+            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, '0')}
               </div>
-              <div className="text-sm text-gray-600">Duration</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Duration</div>
             </div>
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
-              <div className="text-2xl font-bold text-purple-600">
+            <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
+              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                 {carbonOffset}g
               </div>
-              <div className="text-sm text-gray-600">CO₂ Saved</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">CO₂ Saved</div>
             </div>
           </div>
 
@@ -158,7 +158,7 @@ export default function RidePage() {
                 >
                   Stop Ride
                 </button>
-                <div className="text-center text-gray-600">
+                <div className="text-center text-gray-600 dark:text-gray-300">
                   <p>Ride in progress... 🚴</p>
                   <p className="text-sm mt-2">
                     Note: In a real app, this would use GPS to track your actual route
@@ -189,7 +189,7 @@ export default function RidePage() {
             )}
 
             {isConfirmed && (
-              <div className="p-4 bg-green-100 text-green-800 rounded-lg text-center">
+              <div className="p-4 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 rounded-lg text-center">
                 ✅ Ride submitted successfully! You can now verify it to claim rewards.
               </div>
             )}
@@ -197,11 +197,11 @@ export default function RidePage() {
 
           {/* Demo: Simulate distance increase */}
           {isTracking && (
-            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-2">Demo Mode:</p>
+            <div className="mt-8 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">Demo Mode:</p>
               <button
                 onClick={() => setDistance(distance + 1000)}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
               >
                 +1 km (Demo)
               </button>
