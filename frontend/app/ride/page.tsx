@@ -16,6 +16,7 @@ export default function RidePage() {
   const [startTime, setStartTime] = useState<number | null>(null)
   const [rideId, setRideId] = useState<string>('')
 
+  const [actionType, setActionType] = useState<'submit' | 'verify' | null>(null)
   const { writeContract, data: hash, isPending } = useWriteContract()
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
@@ -103,6 +104,8 @@ export default function RidePage() {
     try {
       const rideIdBytes32 = `0x${rideId.replace(/[^0-9a-f]/gi, '').padStart(64, '0')}`
 
+      toast.loading('Verifying ride and claiming rewards...', { id: 'verify-ride' })
+
       writeContract({
         address: contracts.RideVerifier.address as `0x${string}`,
         abi: contracts.RideVerifier.abi,
@@ -111,9 +114,34 @@ export default function RidePage() {
       })
     } catch (error) {
       console.error('Error verifying ride:', error)
-      alert('Error verifying ride. Please try again.')
+      toast.error('Error verifying ride. Please try again.', { id: 'verify-ride' })
     }
   }
+
+  // Handle verification transaction status
+  const { 
+    data: verifyHash, 
+    isPending: isVerifyPending, 
+    isSuccess: isVerifySuccess 
+  } = useWriteContract()
+  
+  const { 
+    isLoading: isVerifyConfirming, 
+    isSuccess: isVerifyConfirmed 
+  } = useWaitForTransactionReceipt({
+    hash: verifyHash,
+  })
+
+  useEffect(() => {
+    if (isVerifyPending) {
+      toast.loading('Verifying ride...', { id: 'verify-tx' })
+    } else if (isVerifyConfirming) {
+      toast.loading('Confirming verification...', { id: 'verify-tx' })
+    } else if (isVerifyConfirmed) {
+      toast.success('Ride verified! Rewards have been claimed! 🎉', { id: 'verify-tx' })
+      toast.success('Ride verified! Rewards have been claimed! 🎉', { id: 'verify-ride' })
+    }
+  }, [isVerifyPending, isVerifyConfirming, isVerifyConfirmed])
 
   if (!isConnected) {
     return (
