@@ -30,13 +30,13 @@ export function ThemeProvider({
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window === 'undefined') return defaultTheme
-    const stored = localStorage.getItem(storageKey) as Theme | null
+    const stored = localStorage.getItem(storageKey)
     // Convert old 'system' values to 'light'
     if (stored === 'system') {
       localStorage.setItem(storageKey, 'light')
       return 'light'
     }
-    return (stored === 'light' || stored === 'dark') ? stored : defaultTheme
+    return (stored === 'light' || stored === 'dark') ? stored as Theme : defaultTheme
   })
 
   useEffect(() => {
