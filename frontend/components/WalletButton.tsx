@@ -11,7 +11,7 @@ export function WalletButton() {
   if (isConnected && address) {
     return (
       <div className="flex items-center gap-4">
-        <div className="px-4 py-2 bg-green-100 text-green-800 rounded-lg">
+        <div className="px-4 py-2 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-lg">
           {address.slice(0, 6)}...{address.slice(-4)}
         </div>
         <button

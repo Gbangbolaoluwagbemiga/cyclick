@@ -36,7 +36,7 @@ export const appKit = createAppKit({
     email: false,
     socials: ['google', 'x', 'github', 'discord', 'apple', 'facebook'],
   },
-  themeMode: 'light',
+  themeMode: 'system', // Follows system preference, can be overridden by ThemeSync
   themeVariables: {
     '--w3m-accent': '#35D07F', // Celo green
   },
