@@ -5,15 +5,16 @@ import { useAccount } from 'wagmi'
 import { useState, useEffect, useRef } from 'react'
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { contracts } from '@/lib/contracts-config'
-import { parseEther, formatEther } from 'viem'
+import { parseEther } from 'viem'
 import toast from 'react-hot-toast'
 import dynamic from 'next/dynamic'
 import confetti from 'canvas-confetti'
+import { Position } from '@/types'
+import { calculateDistance, calculateCarbonOffset, rideIdToBytes32, formatDuration, formatDistance } from '@/utils'
+import { GPS_OPTIONS, STORAGE_KEYS } from '@/constants'
 
 // Dynamically import map to avoid SSR issues
 const MapComponent = dynamic(() => import('@/components/features/RideMap'), { ssr: false })
-
-import { Position } from '@/types'
 
 export default function RidePage() {
   const { address, isConnected } = useAccount()
