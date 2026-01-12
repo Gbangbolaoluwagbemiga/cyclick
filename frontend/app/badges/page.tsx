@@ -1,7 +1,7 @@
 'use client'
 
-import { Header } from '@/components/Header'
-import { SocialShare } from '@/components/SocialShare'
+import { Header } from '@/components/layout/Header'
+import { SocialShare } from '@/components/features/SocialShare'
 import { useAccount, useReadContract } from 'wagmi'
 import { contracts } from '@/lib/contracts-config'
 

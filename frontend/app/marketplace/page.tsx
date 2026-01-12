@@ -1,12 +1,13 @@
 'use client'
 
-import { Header } from '@/components/Header'
+import { Header } from '@/components/layout/Header'
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { contracts } from '@/lib/contracts-config'
 import { formatEther, parseEther } from 'viem'
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { ShoppingCart, Coins, Heart, TrendingUp } from 'lucide-react'
+import { MarketplaceAction } from '@/types'
 
 export default function MarketplacePage() {
   const { address, isConnected } = useAccount()
@@ -14,7 +15,7 @@ export default function MarketplacePage() {
   const [conversionAmount, setConversionAmount] = useState('')
   const [listingPrice, setListingPrice] = useState('')
   const [selectedCredit, setSelectedCredit] = useState<string | null>(null)
-  const [actionType, setActionType] = useState<'convert' | 'list' | 'buy' | 'donate' | null>(null)
+  const [actionType, setActionType] = useState<MarketplaceAction>(null)
 
   const { writeContract, data: hash, isPending } = useWriteContract()
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({

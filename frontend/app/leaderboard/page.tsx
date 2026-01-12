@@ -1,24 +1,18 @@
 'use client'
 
-import { Header } from '@/components/Header'
+import { Header } from '@/components/layout/Header'
 import { useAccount, useReadContract } from 'wagmi'
 import { contracts } from '@/lib/contracts-config'
 import { formatEther } from 'viem'
 import { useState, useEffect } from 'react'
 import { Trophy, Medal, Award, TrendingUp } from 'lucide-react'
-
-interface LeaderboardEntry {
-  address: string
-  rides: bigint
-  distance: bigint
-  rewards: bigint
-  rank: number
-}
+import { LeaderboardEntry, LeaderboardFilter } from '@/types'
+import { formatAddress, formatTokens } from '@/utils'
 
 export default function LeaderboardPage() {
   const { address } = useAccount()
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
-  const [filter, setFilter] = useState<'distance' | 'rides' | 'rewards'>('distance')
+  const [filter, setFilter] = useState<LeaderboardFilter>('distance')
   const [loading, setLoading] = useState(true)
 
   // This is a simplified version - in production, you'd index events or use The Graph
@@ -73,10 +67,6 @@ export default function LeaderboardPage() {
     return <span className="text-gray-500 font-bold">#{rank}</span>
   }
 
-  const formatAddress = (addr: string) => {
-    if (addr === address) return 'You'
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`
-  }
 
   const isCurrentUser = (addr: string) => addr === address
 
@@ -150,7 +140,7 @@ export default function LeaderboardPage() {
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="font-bold text-lg text-gray-900 dark:text-white">
-                              {formatAddress(entry.address)}
+                              {formatAddress(entry.address, address)}
                             </span>
                             {isCurrentUser(entry.address) && (
                               <span className="px-2 py-1 bg-[#35D07F] text-white text-xs rounded-full">
@@ -176,7 +166,7 @@ export default function LeaderboardPage() {
                         <div className="text-center">
                           <div className="text-sm text-gray-500 dark:text-gray-400">Rewards</div>
                           <div className="font-bold text-[#35D07F]">
-                            {parseFloat(formatEther(entry.rewards)).toFixed(1)} CYC
+                            {formatTokens(entry.rewards)}
                           </div>
                         </div>
                       </div>

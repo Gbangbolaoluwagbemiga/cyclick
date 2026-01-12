@@ -1,24 +1,14 @@
 'use client'
 
-import { Header } from '@/components/Header'
+import { Header } from '@/components/layout/Header'
 import { useAccount } from 'wagmi'
 import { useState, useEffect } from 'react'
 import { Target, Trophy, Clock, CheckCircle, Flame } from 'lucide-react'
 import toast from 'react-hot-toast'
 import confetti from 'canvas-confetti'
-
-interface Challenge {
-  id: string
-  title: string
-  description: string
-  type: 'daily' | 'weekly' | 'special'
-  target: number
-  unit: string
-  reward: number
-  progress: number
-  completed: boolean
-  expiresAt: number
-}
+import { Challenge } from '@/types'
+import { getTimeRemaining } from '@/utils'
+import { STORAGE_KEYS } from '@/constants'
 
 export default function ChallengesPage() {
   const { address, isConnected } = useAccount()
@@ -27,7 +17,7 @@ export default function ChallengesPage() {
 
   useEffect(() => {
     // Load streak from localStorage
-    const savedStreak = parseInt(localStorage.getItem('rideStreak') || '0')
+    const savedStreak = parseInt(localStorage.getItem(STORAGE_KEYS.RIDE_STREAK) || '0')
     setStreak(savedStreak)
 
     // Generate daily challenges
@@ -110,20 +100,6 @@ export default function ChallengesPage() {
     )
   }
 
-  const getTimeRemaining = (expiresAt: number) => {
-    const now = Date.now()
-    const diff = expiresAt - now
-    if (diff <= 0) return 'Expired'
-
-    const hours = Math.floor(diff / (1000 * 60 * 60))
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-
-    if (hours > 24) {
-      const days = Math.floor(hours / 24)
-      return `${days} day${days > 1 ? 's' : ''} left`
-    }
-    return `${hours}h ${minutes}m left`
-  }
 
   const getChallengeIcon = (type: string) => {
     switch (type) {

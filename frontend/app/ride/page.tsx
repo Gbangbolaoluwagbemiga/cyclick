@@ -1,6 +1,6 @@
 'use client'
 
-import { Header } from '@/components/Header'
+import { Header } from '@/components/layout/Header'
 import { useAccount } from 'wagmi'
 import { useState, useEffect, useRef } from 'react'
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
@@ -11,13 +11,9 @@ import dynamic from 'next/dynamic'
 import confetti from 'canvas-confetti'
 
 // Dynamically import map to avoid SSR issues
-const MapComponent = dynamic(() => import('@/components/RideMap'), { ssr: false })
+const MapComponent = dynamic(() => import('@/components/features/RideMap'), { ssr: false })
 
-interface Position {
-  lat: number
-  lng: number
-  timestamp: number
-}
+import { Position } from '@/types'
 
 export default function RidePage() {
   const { address, isConnected } = useAccount()
@@ -40,21 +36,8 @@ export default function RidePage() {
     hash,
   })
 
-  // Calculate distance between two coordinates (Haversine formula)
-  const calculateDistance = (pos1: Position, pos2: Position): number => {
-    const R = 6371000 // Earth radius in meters
-    const dLat = (pos2.lat - pos1.lat) * Math.PI / 180
-    const dLng = (pos2.lng - pos1.lng) * Math.PI / 180
-    const a = 
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(pos1.lat * Math.PI / 180) * Math.cos(pos2.lat * Math.PI / 180) *
-      Math.sin(dLng / 2) * Math.sin(dLng / 2)
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-    return R * c
-  }
-
-  // Calculate carbon offset (rough estimate: 0.2kg CO2 per km)
-  const carbonOffset = Math.round((distance / 1000) * 200) // in grams
+  // Calculate carbon offset
+  const carbonOffset = calculateCarbonOffset(distance)
 
   // Update duration timer
   useEffect(() => {
@@ -77,11 +60,7 @@ export default function RidePage() {
   useEffect(() => {
     if (!isTracking || !navigator.geolocation) return
 
-    const options = {
-      enableHighAccuracy: true,
-      timeout: 5000,
-      maximumAge: 0
-    }
+    const options = GPS_OPTIONS
 
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
@@ -185,7 +164,7 @@ export default function RidePage() {
 
     try {
       // Convert rideId to bytes32
-      const rideIdBytes32 = `0x${rideId.replace(/[^0-9a-f]/gi, '').padStart(64, '0')}`
+      const rideIdBytes32 = rideIdToBytes32(rideId)
 
       setActionType('submit')
       toast.loading('Submitting ride...', { id: 'tx-action' })
@@ -212,7 +191,7 @@ export default function RidePage() {
     if (!rideId) return
 
     try {
-      const rideIdBytes32 = `0x${rideId.replace(/[^0-9a-f]/gi, '').padStart(64, '0')}`
+      const rideIdBytes32 = rideIdToBytes32(rideId)
 
       setActionType('verify')
       toast.loading('Verifying ride and claiming rewards...', { id: 'tx-action' })
@@ -262,8 +241,8 @@ export default function RidePage() {
   useEffect(() => {
     if (isConfirmed && actionType === 'verify') {
       const today = new Date().toDateString()
-      const lastRide = localStorage.getItem('lastRideDate')
-      const currentStreak = parseInt(localStorage.getItem('rideStreak') || '0')
+      const lastRide = localStorage.getItem(STORAGE_KEYS.LAST_RIDE_DATE)
+      const currentStreak = parseInt(localStorage.getItem(STORAGE_KEYS.RIDE_STREAK) || '0')
       
       if (lastRide === today) {
         // Already rode today, don't update streak
@@ -276,13 +255,13 @@ export default function RidePage() {
       
       if (lastRide === yesterdayStr) {
         // Continue streak
-        localStorage.setItem('rideStreak', (currentStreak + 1).toString())
+        localStorage.setItem(STORAGE_KEYS.RIDE_STREAK, (currentStreak + 1).toString())
       } else {
         // New streak
-        localStorage.setItem('rideStreak', '1')
+        localStorage.setItem(STORAGE_KEYS.RIDE_STREAK, '1')
       }
       
-      localStorage.setItem('lastRideDate', today)
+      localStorage.setItem(STORAGE_KEYS.LAST_RIDE_DATE, today)
     }
   }, [isConfirmed, actionType])
 
@@ -314,15 +293,15 @@ export default function RidePage() {
               <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Ride Statistics</h2>
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-4 bg-green-50 dark:bg-green-900/30 rounded-lg">
-                  <div className="text-2xl font-bold text-[#35D07F]">
-                    {(distance / 1000).toFixed(2)} km
-                  </div>
+              <div className="text-2xl font-bold text-[#35D07F]">
+                {formatDistance(distance)}
+              </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">Distance</div>
                 </div>
                 <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, '0')}
-                  </div>
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                {formatDuration(duration)}
+              </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">Duration</div>
                 </div>
                 <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
